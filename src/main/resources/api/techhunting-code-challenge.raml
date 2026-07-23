@@ -1,0 +1,27 @@
+#%RAML 1.0
+---
+title: techhunting code challenge
+version: v1
+
+/customers:
+  /process:
+    post:
+      description: Process a customer payload and return canonical customer JSON
+      body:
+        application/json:
+          type: object
+        application/xml:
+          type: object
+      responses:
+        200:
+          description: Canonical customer object
+          body:
+            application/json:
+              type: object
+        400:
+          description: Validation error
+          body:
+            application/json:
+              type: object
+          
+    
