@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Customer>
+  <externalId>EXT-987</externalId>
+  <name>
+    <given> Bob </given>
+    <family>Jones</family>
+  </name>
+  <contact>
+    <email> bob.jones@example.org </email>
+    <address>
+      <streetLine>456 Oak Ave</streetLine>
+      <city>Othertown</city>
+      <region>NY</region>
+      <zip>10001</zip>
+    </address>
+  </contact>
+  <birthDate>15/08/1985</birthDate>
+  <sourceSystem>LegacyCRM</sourceSystem>
+</Customer>

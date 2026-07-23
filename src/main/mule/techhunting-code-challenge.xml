@@ -15,7 +15,7 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="techhunting-code-challenge-config" />
-		<error-handler ref="global-error-handlerError_Handler" />
+		<error-handler ref="global-error-handler-apikit" />
     </flow>
     <flow name="techhunting-code-challenge-console">
         <http:listener config-ref="techhunting-code-challenge-httpListenerConfig" path="/console/*">
@@ -28,28 +28,14 @@
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="techhunting-code-challenge-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
+		<error-handler ref="global-error-handler-console" />
     </flow>
     <flow name="post:\customers\process:application\json:techhunting-code-challenge-config">
-        <logger level="INFO" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="start: json" doc:name="start: json"/>
-		<logger level="INFO" doc:name="start: json1" doc:id="8288e7b4-2956-484c-ab9a-e510cfe0ed98" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="end: json" />
+        <logger level="INFO" message="start: post:\customers\process:application\json:techhunting-code-challenge-config" doc:name="start: json"/>
+		<logger level="INFO" doc:name="end: json" doc:id="8288e7b4-2956-484c-ab9a-e510cfe0ed98" message="end: post:\customers\process:application\json:techhunting-code-challenge-config"/>
     </flow>
     <flow name="post:\customers\process:application\xml:techhunting-code-challenge-config">
-		<logger level="INFO" doc:name="start: xml" doc:id="f3001b2e-0192-43a0-bc42-9641e6929ef2" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="start: xml" />
-		<logger level="INFO" doc:name="end: xml" doc:id="2ddafded-74eb-44a8-b9ce-acd51a4e70d8" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="end: xml" />
+		<logger level="INFO" doc:name="start: xml" doc:id="f3001b2e-0192-43a0-bc42-9641e6929ef2" message="start: post:\customers\process:application\json:techhunting-code-challenge-config"/>
+		<logger level="INFO" doc:name="end: xml" doc:id="2ddafded-74eb-44a8-b9ce-acd51a4e70d8" message="end: post:\customers\process:application\json:techhunting-code-challenge-config"/>
     </flow>
 </mule>

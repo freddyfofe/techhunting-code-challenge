@@ -1,7 +1,18 @@
 #%RAML 1.0
----
 title: techhunting code challenge
 version: v1
+protocols:
+  - HTTP
+  - HTTPS
+description: Techhunting mulesoft code challenge
+
+######################################################
+# WHO WHEN       WHY
+# FF  07/23/2026 Initial Definition
+######################################################
+
+types:
+  customer: !include datatypes/customer.raml
 
 /customers:
   /process:
@@ -9,9 +20,11 @@ version: v1
       description: Process a customer payload and return canonical customer JSON
       body:
         application/json:
-          type: object
+          type: customer
+          example: !include examples/customers-process-request-example.json
         application/xml:
-          type: object
+          type: customer
+          example: !include examples/customers-process-request-example.xml
       responses:
         200:
           description: Canonical customer object

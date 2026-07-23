@@ -1,0 +1,73 @@
+#%RAML 1.0 DataType
+
+type: object
+
+xml:
+  name: Customer
+
+properties:
+  customerId:
+    type: string
+    required: false
+    example: C-1001
+
+  externalId:
+    type: string | nil
+    required: false
+    example: EXT-987
+
+  firstName:
+    type: string
+    required: false
+    example: Alice
+
+  lastName:
+    type: string
+    required: false
+    example: Smith
+
+  fullName:
+    type: string
+    required: false
+    example: Alice Smith
+
+  name:
+    type: !include name.raml
+    required: false
+
+  email:
+    type: string
+    required: false
+    example: alice.smith@example.com
+
+  contact:
+    type: !include contact.raml
+    required: false
+
+  address:
+    type: !include address.raml
+    required: false
+
+  dateOfBirth:
+    type: date-only
+    required: false
+    example: 1990-04-15
+
+  birthDate:
+    type: string
+    required: false
+    example: 15/08/1985
+
+  age:
+    type: integer
+    required: false
+    example: 36
+
+  sourceSystem:
+    type: string
+    required: false
+    example: LegacyCRM
+
+  sourceMeta:
+    type: !include source.raml
+    required: false
