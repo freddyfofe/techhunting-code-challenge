@@ -1,0 +1,23 @@
+{
+  "customer": {
+    "customerId": null,
+    "externalId": "EXT-987",
+    "firstName": "Bob",
+    "lastName": "Jones",
+    "fullName": "Bob Jones",
+    "email": "bob.jones@example.org",
+    "dateOfBirth": "1985-08-15",
+    "age": 40,
+    "address": {
+      "street": "456 Oak Ave",
+      "city": "Othertown",
+      "state": "NY",
+      "postalCode": "10001",
+      "country": "US"
+    },
+    "sourceMeta": {
+      "sourceSystem": "LegacyCRM",
+      "receivedAt": "2026-07-23T20:39:50.1547077-05:00"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "error": "Validation failed",
+  "details": [
+    "dateOfBirth could not be parsed"
+  ]
+}

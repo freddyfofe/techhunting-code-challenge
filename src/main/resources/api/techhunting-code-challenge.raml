@@ -21,20 +21,30 @@ types:
       body:
         application/json:
           type: customer
-          example: !include examples/customers-process-request-example.json
+          examples: 
+            jsonSuccess: !include examples/customers-process-request-success-example.json
+            invalidDOBError: !include examples/customers-process-request-invalid-dob-error-example.json
         application/xml:
           type: customer
-          example: !include examples/customers-process-request-example.xml
+          examples: 
+            xmlSuccess: !include examples/customers-process-request-success-example.xml
+            invalidNameError: !include examples/customers-process-request-invalid-name-error-example.xml
       responses:
         200:
           description: Canonical customer object
           body:
             application/json:
               type: object
+              examples:
+                internalCustomerSuccess: !include examples/customers-process-response-success-example.json
+                externalCustomerSuccess: !include examples/customers-process-response-external-success-example.json
         400:
           description: Validation error
           body:
             application/json:
               type: object
+              examples:
+                fieldValidationError: !include examples/customers-process-response-name-error-example.json
+                dateOfBirthError: !include examples/customers-process-response-dob-error-example.json 
           
     
