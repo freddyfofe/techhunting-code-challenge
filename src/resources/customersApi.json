@@ -1,0 +1,154 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Customer Process API",
+    "version": "v1",
+    "description": "This API was created to process customers from internal and external systems and transform them into canonical customers.
+    
+    This services was created as part of the tech hunting code challenge for the mulesoft developer position."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081"
+    }
+  ],
+  "paths": {
+    "/customers/process": {
+      "post": {
+        "summary": "Process Customer",
+        "description": "Processes a customer payload received in either JSON or XML format and returns a canonical customer representation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              },
+              "example": {
+                "id": "C-1001",
+                "name": {
+                  "first": " Alice ",
+                  "last": " Smith "
+                },
+                "email": "  ALICE.SMITH@Example.COM ",
+                "dob": "1990-04-15",
+                "address": {
+                  "line1": "123 Main St",
+                  "city": "Anytown",
+                  "state": "CA",
+                  "postalCode": "90210",
+                  "country": "US"
+                },
+                "sourceSystem": "CRM-X"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              },
+              "example": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Customer>\n  <externalId>EXT-987</externalId>\n  <name>\n    <given> Bob </given>\n    <family>Jones</family>\n  </name>\n  <contact>\n    <email> bob.jones@example.org </email>\n    <address>\n      <streetLine>456 Oak Ave</streetLine>\n      <city>Othertown</city>\n      <region>NY</region>\n      <zip>10001</zip>\n    </address>\n  </contact>\n  <birthDate>15/08/1985</birthDate>\n  <sourceSystem>LegacyCRM</sourceSystem>\n</Customer>"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canonical customer object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CanonicalCustomer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Customer": {
+        "type": "object",
+        "description": "Represents a customer payload received from either a modern CRM (JSON) or a legacy CRM (XML)."
+      },
+      "CanonicalCustomer": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "postalCode": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          "sourceSystem": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

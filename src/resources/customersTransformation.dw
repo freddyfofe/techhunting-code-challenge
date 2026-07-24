@@ -1,0 +1,86 @@
+%dw 2.0
+import try from dw::Runtime
+output application/json
+
+var currentDate = now()
+
+//Validate payload using mimeType
+var src = if (payload.^mimeType == "application/json") payload
+else if (payload.^mimeType == "application/xml") payload.Customer
+else null
+
+//Helper: safe parse date in common formats, return null if fails
+fun parseDate(inputDate) =
+    if (inputDate == null)
+        null
+    else
+        (
+            [
+                try(() -> inputDate as Date {format: "yyyy-MM-dd"}),
+                try(() -> inputDate as Date {format: "dd/MM/yyyy"}),
+                try(() -> inputDate as Date {format: "MM-dd-yyyy"}),
+                try(() -> inputDate as Date)
+            ]
+            filter $.success
+        )[0].result default null
+
+// Helper: Trim and lower methods
+fun trimLower(inputStr) = if (inputStr == null) null else lower(trim((inputStr as String)))
+fun trimCap(inputStr) = if (inputStr == null) null else trim((inputStr as String))
+
+// Field definition
+var customerId = src.customerId default src.id default src.externalId default src.customer.id
+var firstName = src.firstName default src.name.first default src.name.given
+var lastName = src.lastName default src.name.last default src.name.family
+var emailRaw = src.email default src.contact.email
+var dobRaw = src.dateOfBirth default src.dob default src.birthDate
+var addressSrc = src.address default src.contact.address default src.addresses[0]
+
+var parsedDob = parseDate(dobRaw)
+var dobErrors = if (dobRaw != null and parsedDob == null) ["dateOfBirth could not be parsed"] else []
+
+
+fun ageFrom(inputDate) =
+  if (inputDate == null) null
+  else currentDate.year - inputDate.year - (if ((currentDate.month < inputDate.month) or ((currentDate.month == inputDate.month) and (currentDate.day < inputDate.day))) 1 else 0)
+
+// Field validations
+var errors = []
+    ++ (if (customerId == null) ["customerId or externalId is required"] else [])
+    ++ (if (firstName == null) ["firstName is required"] else [])
+    ++ (if (lastName == null) ["lastName is required"] else [])
+    ++ (if (emailRaw == null) ["email is required"] else [])
+
+---
+if (sizeOf(errors) > 0)  {
+    error: "Validation failed",
+    details: errors
+}
+else if (sizeOf(dobErrors) > 0) {
+    error: "Validation failed",
+    details: dobErrors
+}
+else 
+{
+    customer: {
+	    customerId: src.id,
+	    externalId: src.externalId,
+	    firstName: trimCap(firstName),
+	    lastName: trimCap(lastName),
+	    fullName: (trimCap(firstName) default "") ++ " " ++ trim((trimCap(lastName) default "")),
+	    email: trimLower(emailRaw),
+	    dateOfBirth: parsedDob as Date {format: "yyyy-MM-dd"},
+	    age: if (parsedDob == null) null else ageFrom(parsedDob),
+	    address: {
+	        street: (addressSrc.line1 default addressSrc.street default addressSrc.streetLine default null) as String,
+	        city: addressSrc.city default null,
+	        state: addressSrc.state default addressSrc.region,
+	        postalCode: addressSrc.postalCode default addressSrc.zip,
+	        country: addressSrc.country default "US"
+	    },
+	    sourceMeta: {
+	        sourceSystem: src.sourceSystem,
+	        receivedAt: now() as DateTime
+	    }
+    }
+}
