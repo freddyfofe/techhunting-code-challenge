@@ -63,20 +63,17 @@ var errors = []
 
 ---
 if (sizeOf(errors) > 0)  {
-    status: 400,
     error: "Validation failed",
     details: errors
 }
 else if (sizeOf(dobErrors) > 0) {
-    status: 400,
     error: "Validation failed",
     details: dobErrors
 }
 else 
 {
-    status: 200,
     customer: {
-	    customerId: src.customerId,
+	    customerId: src.id,
 	    externalId: src.externalId,
 	    firstName: trimCap(firstName),
 	    lastName: trimCap(lastName),
@@ -99,6 +96,7 @@ else
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<set-variable value="#[if (payload.error != null) 400 else 200]" doc:name="httpStatus" doc:id="e62ed9ec-5098-45e6-af35-7f7ebd03b3d2" variableName="httpStatus"/>
 		<logger level="INFO" doc:name="end: sr-customer-process" doc:id="b2969fdc-55a8-4409-adae-5a0aa6f082eb" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="end: json" />
 	</sub-flow>
 </mule>
