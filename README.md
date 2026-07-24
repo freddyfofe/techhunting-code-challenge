@@ -28,11 +28,11 @@ The Error handling strategy defined for this project is the global error handler
 
 ### OpenAPI
 
-Here you can find the OpenAPI documentation for this service: [customerApi.json](/resources/customersApi.json)
+Here you can find the OpenAPI documentation for this service: [customerApi.json](/src/resources/customersApi.json)
 
 ### DataWeave Script
 
-Here you can check the Dataweave Script used to complete this challenge: [customersTransformation.dw](/resources/customersTransformation.dw)
+Here you can check the Dataweave Script used to complete this challenge: [customersTransformation.dw](/src/resources/customersTransformation.dw)
 
 #### Execution in Playground
 
@@ -58,11 +58,11 @@ This section is created to demonstrate the built in console created for this pro
 
 To access the consolde, run the service in the Anypoint Studio and access the url: http://localhost:8081/console/
 
-![Console Login](/resources/images/console1.png)
-![Console Main Page](/resources/images/console2.png)
-![Console Body Examples Json](/resources/images/console3.png)
-![Console Body Examples Xml](/resources/images/console4.png)
-![Console Successful Responses](/resources/images/console5.png)
-![Console Failed Responses](/resources/images/console6.png)
+![Console Login](/src/resources/images/console1.png)
+![Console Main Page](/src/resources/images/console2.png)
+![Console Body Examples Json](/src/resources/images/console3.png)
+![Console Body Examples Xml](/src/resources/images/console4.png)
+![Console Successful Responses](/src/resources/images/console5.png)
+![Console Failed Responses](/src/resources/images/console6.png)
 
 
