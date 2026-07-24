@@ -32,10 +32,12 @@
     </flow>
     <flow name="post:\customers\process:application\json:techhunting-code-challenge-config">
         <logger level="INFO" message="start: post:\customers\process:application\json:techhunting-code-challenge-config" doc:name="start: json"/>
+		<flow-ref doc:name="sr-customer-process" doc:id="fa0bc01c-4145-4242-8d39-10de8011310b" name="sr-customer-process"/>
 		<logger level="INFO" doc:name="end: json" doc:id="8288e7b4-2956-484c-ab9a-e510cfe0ed98" message="end: post:\customers\process:application\json:techhunting-code-challenge-config"/>
     </flow>
     <flow name="post:\customers\process:application\xml:techhunting-code-challenge-config">
 		<logger level="INFO" doc:name="start: xml" doc:id="f3001b2e-0192-43a0-bc42-9641e6929ef2" message="start: post:\customers\process:application\json:techhunting-code-challenge-config"/>
+		<flow-ref doc:name="sr-customer-process" doc:id="9e19cb63-a036-4413-99f8-bf3f14acd2e0" name="sr-customer-process"/>
 		<logger level="INFO" doc:name="end: xml" doc:id="2ddafded-74eb-44a8-b9ce-acd51a4e70d8" message="end: post:\customers\process:application\json:techhunting-code-challenge-config"/>
     </flow>
 </mule>

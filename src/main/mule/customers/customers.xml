@@ -1,10 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="sr-customer-process" doc:id="fa052d06-5ed4-4e62-97ec-5d7867176b29" >
 		<logger level="INFO" doc:name="start: sr-customer-process" doc:id="088f7607-7e93-4e17-a0aa-2fddd8f978c6" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="start: json" />
+		<ee:transform doc:name="canonicalObject" doc:id="68ce9a44-ac60-4f4f-8c2d-b5dbcfbd993e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import try from dw::Runtime
+output application/json
+
+var currentDate = now()
+
+//Validate payload using mimeType
+var src = if (payload.^mimeType == "application/json") payload
+else if (payload.^mimeType == "application/xml") payload.Customer
+else null
+
+//Helper: safe parse date in common formats, return null if fails
+fun parseDate(inputDate) =
+    if (inputDate == null)
+        null
+    else
+        (
+            [
+                try(() -> inputDate as Date {format: "yyyy-MM-dd"}),
+                try(() -> inputDate as Date {format: "dd/MM/yyyy"}),
+                try(() -> inputDate as Date {format: "MM-dd-yyyy"}),
+                try(() -> inputDate as Date)
+            ]
+            filter $.success
+        )[0].result default null
+
+// Helper: Trim and lower methods
+fun trimLower(inputStr) = if (inputStr == null) null else lower(trim((inputStr as String)))
+fun trimCap(inputStr) = if (inputStr == null) null else trim((inputStr as String))
+
+// Field definition
+var customerId = src.customerId default src.id default src.externalId default src.customer.id
+var firstName = src.firstName default src.name.first default src.name.given
+var lastName = src.lastName default src.name.last default src.name.family
+var emailRaw = src.email default src.contact.email
+var dobRaw = src.dateOfBirth default src.dob default src.birthDate
+var addressSrc = src.address default src.contact.address default src.addresses[0]
+
+var parsedDob = parseDate(dobRaw)
+var dobErrors = if (dobRaw != null and parsedDob == null) ["dateOfBirth could not be parsed"] else []
+
+
+fun ageFrom(inputDate) =
+  if (inputDate == null) null
+  else currentDate.year - inputDate.year - (if ((currentDate.month < inputDate.month) or ((currentDate.month == inputDate.month) and (currentDate.day < inputDate.day))) 1 else 0)
+
+// Field validations
+var errors = []
+    ++ (if (customerId == null) ["customerId or externalId is required"] else [])
+    ++ (if (firstName == null) ["firstName is required"] else [])
+    ++ (if (lastName == null) ["lastName is required"] else [])
+    ++ (if (emailRaw == null) ["email is required"] else [])
+
+---
+if (sizeOf(errors) > 0)  {
+    status: 400,
+    error: "Validation failed",
+    details: errors
+}
+else if (sizeOf(dobErrors) > 0) {
+    status: 400,
+    error: "Validation failed",
+    details: dobErrors
+}
+else 
+{
+    status: 200,
+    customer: {
+	    customerId: src.customerId,
+	    externalId: src.externalId,
+	    firstName: trimCap(firstName),
+	    lastName: trimCap(lastName),
+	    fullName: (trimCap(firstName) default "") ++ " " ++ trim((trimCap(lastName) default "")),
+	    email: trimLower(emailRaw),
+	    dateOfBirth: parsedDob as Date {format: "yyyy-MM-dd"},
+	    age: if (parsedDob == null) null else ageFrom(parsedDob),
+	    address: {
+	        street: (addressSrc.line1 default addressSrc.street default addressSrc.streetLine default null) as String,
+	        city: addressSrc.city default null,
+	        state: addressSrc.state default addressSrc.region,
+	        postalCode: addressSrc.postalCode default addressSrc.zip,
+	        country: addressSrc.country default "US"
+	    },
+	    sourceMeta: {
+	        sourceSystem: src.sourceSystem,
+	        receivedAt: now() as DateTime
+	    }
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<logger level="INFO" doc:name="end: sr-customer-process" doc:id="b2969fdc-55a8-4409-adae-5a0aa6f082eb" message="post:\customers\process:application\json:techhunting-code-challenge-config" category="end: json" />
 	</sub-flow>
 </mule>
